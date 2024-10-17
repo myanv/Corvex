@@ -54,7 +54,7 @@ export function provideLatexCompletionItems(
     suggestions.push({
       label: `\\end{${details.unclosedEnvironment}}`,
       kind: monaco.languages.CompletionItemKind.Snippet,
-      insertText: `\\end{${details.unclosedEnvironment}}\n`,
+      insertText: `end{${details.unclosedEnvironment}}\n`,
       documentation: 'Close the unclosed environment',
       range: range,
     });
@@ -206,32 +206,14 @@ function locateMatchingCommandNames(
   extractedWord: string,
   range: monaco.IRange
 ): monaco.languages.CompletionItem[] {
-  const commandList = [
-    'begin',
-    'end',
-    'section',
-    'subsection',
-    'includegraphics',
-    'input',
-    'include',
-    'textbf',
-    'textit',
-    'underline',
-    'item',
-    'label',
-    'ref',
-    'cite',
-    'frac',
-    'sqrt',
-    // Add more commandnds
-  ];
-
+  const listOfCommands = "addcontentsline addtocontents addtocounter address addtolength addvspace alph appendix arabic author backslash baselineskip baselinestretch bf bibitem bigskipamount bigskip boldmath cal caption cdots centering chapter circle cite cleardoublepage clearpage cline closing color copyright dashbox date ddots documentclass dotfill em emph ensuremath euro fbox flushbottom fnsymbol footnote footnotemark footnotesize footnotetext frac frame framebox frenchspacing hfill hline hrulefill hspace huge Huge hyphenation include includegraphics includeonly indent input it item kill label large Large LARGE LaTeX LaTeXe ldots left lefteqn line linebreak linethickness linewidth listoffigures listoftables location makebox maketitle markboth markright mathcal mathop mbox medskip multicolumn multiput newcommand newcounter newenvironment newfont newlength newline newpage newsavebox newtheorem nocite noindent nolinebreak nonfrenchspacing normalsize nopagebreak not onecolumn opening oval overbrace overline pagebreak pagenumbering pageref pagestyle par paragraph parbox parindent parskip part protect providecommand put raggedbottom raggedleft raggedright raisebox ref renewcommand right rm roman rule savebox sbox sc scriptsize section setcounter setlength settowidth sf shortstack signature sl slash small smallskip sout space sqrt stackrel subparagraph subsection subsubsection tableofcontents telephone TeX textbf textcolor textit textmd textnormal textrm textsc textsf textsl texttt textup textwidth textheight thanks thispagestyle tiny title today tt twocolumn typeout typein uline underbrace underline unitlength usebox usecounter uwave value vbox vdots vector verb vfill vline vphantom vspace"; // prettier-ignore
+  const commandList = listOfCommands.split(' ');
   const filteredCommands = commandList.filter((cmd) => cmd.startsWith(extractedWord));
 
   const suggestions = filteredCommands.map((cmd) => ({
     label: `\\${cmd}`,
     kind: monaco.languages.CompletionItemKind.Function,
-    insertText: `\\${cmd}`,
+    insertText: `${cmd}`,
     range: range,
   }));
 

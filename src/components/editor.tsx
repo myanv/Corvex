@@ -48,6 +48,7 @@ export const EditorComponent = () => {
 
         // Auto-completion
         monaco.languages.registerCompletionItemProvider('latex', {
+            triggerCharacters: ['\\', '{', '}'],
             provideCompletionItems: (model, position) => {
                 return provideLatexCompletionItems(model, position);
             }
