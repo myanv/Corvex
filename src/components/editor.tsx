@@ -5,7 +5,11 @@ import Editor, { Monaco, OnChange, OnMount, BeforeMount } from '@monaco-editor/r
 import { provideLatexCompletionItems } from '@/hooks/editor/latexAutocomplete';
 import type monaco from 'monaco-editor';
 
-export const EditorComponent = () => {
+interface EditorComponentProps {
+    content: string;
+    setContent: (content: string) => void;
+}
+export const EditorComponent: React.FC<EditorComponentProps> = ({ content, setContent }) => {
     const editorRef = useRef<monaco.editor.IStandaloneCodeEditor>();
 
     const handleEditorWillMount: BeforeMount = (monaco: Monaco) => {
@@ -80,6 +84,7 @@ export const EditorComponent = () => {
             height="100%"
             defaultLanguage="latex"
             defaultValue='\\documentclass{article}\n\\begin{document}\n\n\\end{document}'
+            value={content}
             theme="vs-dark"
             onMount={handleEditorDidMount}
             beforeMount={handleEditorWillMount}
