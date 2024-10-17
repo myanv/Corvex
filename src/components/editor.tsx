@@ -2,13 +2,16 @@
 
 import React, { useRef } from 'react';
 import Editor, { Monaco, OnChange, OnMount, BeforeMount } from '@monaco-editor/react';
+import { provideLatexCompletionItems } from '@/hooks/editor/latexAutocomplete';
 import type monaco from 'monaco-editor';
 
-const EditorComponent = () => {
+export const EditorComponent = () => {
     const editorRef = useRef<monaco.editor.IStandaloneCodeEditor>();
 
     const handleEditorWillMount: BeforeMount = (monaco: Monaco) => {
         monaco.languages.register({ id: 'latex' })
+
+        // Syntax highlighting
         monaco.languages.setMonarchTokensProvider('latex', {
             tokenizer: {
                 root: [
@@ -20,11 +23,54 @@ const EditorComponent = () => {
                 ]
             }
         })
+
+        // Auto-completion
+        monaco.languages.registerCompletionItemProvider('latex', {
+            triggerCharacters: ['\\', '{', '}'],
+            provideCompletionItems: (model, position) => {
+                return provideLatexCompletionItems(model, position)
+            }
+        })
+
+        monaco.languages.register({ id: 'latex-snippets' })
     }
 
     const handleEditorDidMount: OnMount = (editor: monaco.editor.IStandaloneCodeEditor, monaco: Monaco) => {
         editorRef.current = editor;
-    }
+
+        const autoCompletePairs = {
+            '(': ')',
+            '{': '}',
+            '[': ']',
+            "'": "'",
+            '"': '"',
+            '$': '$',
+          };
+        
+        editor.onKeyDown((e) => {
+            const openSymbol = e.browserEvent.key;
+        
+            if (openSymbol in autoCompletePairs) {
+                e.preventDefault();
+
+                const closeSymbol = autoCompletePairs[openSymbol as keyof typeof autoCompletePairs];
+
+                const position = editor.getPosition();
+                const range = new monaco.Range(position!.lineNumber, position!.column, position!.lineNumber, position!.column);
+        
+                editor.executeEdits('', [
+                    {
+                        range: range,
+                        text: `${openSymbol}${closeSymbol}`,
+                        forceMoveMarkers: true,
+                    },
+                ]);
+        
+                // Move the cursor
+                editor.setPosition({ lineNumber: position!.lineNumber, column: position!.column + 1 });
+            }
+        });
+    };
 
     const handleEditorChange: OnChange = (value: string | undefined, event: monaco.editor.IModelContentChangedEvent) => {
         console.log('current model value:', value);
@@ -33,14 +79,16 @@ const EditorComponent = () => {
         <Editor
             height="100%"
             defaultLanguage="latex"
-            defaultValue='Type your LaTeX code here...'
+            defaultValue='\\documentclass{article}\n\\begin{document}\n\n\\end{document}'
             theme="vs-dark"
             onMount={handleEditorDidMount}
             beforeMount={handleEditorWillMount}
             onChange={handleEditorChange}
             options={{
                 fontFamily: 'var(--font-geist-sans)',
-                fontSize: 18,
+                fontSize: 16,
+                formatOnType: true,
+                snippetSuggestions: 'top',
                 automaticLayout: true
             }}
         />
