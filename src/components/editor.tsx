@@ -28,7 +28,7 @@ export const EditorComponent = () => {
         monaco.languages.registerCompletionItemProvider('latex', {
             triggerCharacters: ['\\', '{', '}'],
             provideCompletionItems: (model, position) => {
-                return provideLatexCompletionItems(model, position);
+                return provideLatexCompletionItems(model, position)
             }
         })
 
@@ -37,7 +37,40 @@ export const EditorComponent = () => {
 
     const handleEditorDidMount: OnMount = (editor: monaco.editor.IStandaloneCodeEditor, monaco: Monaco) => {
         editorRef.current = editor;
-    }
+
+        const autoCompletePairs = {
+            '(': ')',
+            '{': '}',
+            '[': ']',
+            "'": "'",
+            '"': '"',
+            '$': '$',
+          };
+        
+        editor.onKeyDown((e) => {
+            const openSymbol = e.browserEvent.key;
+        
+            if (openSymbol in autoCompletePairs) {
+                e.preventDefault();
+
+                const closeSymbol = autoCompletePairs[openSymbol as keyof typeof autoCompletePairs];
+
+                const position = editor.getPosition();
+                const range = new monaco.Range(position!.lineNumber, position!.column, position!.lineNumber, position!.column);
+        
+                editor.executeEdits('', [
+                    {
+                        range: range,
+                        text: `${openSymbol}${closeSymbol}`,
+                        forceMoveMarkers: true,
+                    },
+                ]);
+        
+                // Move the cursor
+                editor.setPosition({ lineNumber: position!.lineNumber, column: position!.column + 1 });
+            }
+        });
+    };
 
     const handleEditorChange: OnChange = (value: string | undefined, event: monaco.editor.IModelContentChangedEvent) => {
         console.log('current model value:', value);
