@@ -94,7 +94,8 @@ export const EditorComponent: React.FC<EditorComponentProps> = ({ content, setCo
                 fontSize: 16,
                 formatOnType: true,
                 snippetSuggestions: 'top',
-                automaticLayout: true
+                automaticLayout: true,
+                wordWrap: 'on',
             }}
         />
     )
