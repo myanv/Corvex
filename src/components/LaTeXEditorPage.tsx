@@ -1,13 +1,16 @@
-import { Editor } from "@monaco-editor/react";
+
 import { useState } from "react";
+import { LaTeXRenderer } from "./LaTeXRenderer";
+import { EditorComponent } from "./editor";
 
 
 export const LaTeXEditorPage = () => {
     const [content, setContent] = useState<string>('');
-    
+
     return (
         <div className="h-full flex">
-            <Editor />
+            <EditorComponent content={content} setContent={setContent} />
+            <LaTeXRenderer content={content} setContent={setContent} />
         </div>
     );
 }

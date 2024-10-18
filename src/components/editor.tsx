@@ -77,7 +77,7 @@ export const EditorComponent: React.FC<EditorComponentProps> = ({ content, setCo
     };
 
     const handleEditorChange: OnChange = (value: string | undefined, event: monaco.editor.IModelContentChangedEvent) => {
-        console.log('current model value:', value);
+        setContent(value || '');
     }
     return (
         <Editor
