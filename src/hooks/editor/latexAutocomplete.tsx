@@ -1,3 +1,5 @@
+'use client';
+
 /** 
 * I used the following JS code as a reference:
 *

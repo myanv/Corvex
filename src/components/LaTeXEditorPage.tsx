@@ -10,8 +10,12 @@ export const LaTeXEditorPage = () => {
 
     return (
         <div className="h-full flex">
-            <EditorComponent content={content} setContent={setContent} />
-            <LaTeXRenderer content={content} setContent={setContent} />
+            <div className="flex-1">
+                <EditorComponent content={content} setContent={setContent} />
+            </div>
+            <div className="flex-grow">
+                <LaTeXRenderer content={content} setContent={setContent} />
+            </div>
         </div>
     );
 }

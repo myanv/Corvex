@@ -23,7 +23,9 @@ export async function POST(request: Request) {
 
   try {
 
-    const pdfBuffer = await generatePDFfromLatex(content);
+    const unsafePdfBuffer = await generatePDFfromLatex(content);
+
+    const pdfBuffer = Buffer.from(unsafePdfBuffer);
 
 
     return new NextResponse(pdfBuffer, {
