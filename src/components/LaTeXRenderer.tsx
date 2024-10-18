@@ -10,26 +10,27 @@ export const LaTeXRenderer: React.FC<LaTeXRendererProps> = ({ content }) => {
   const [pdfUrl, setPdfUrl] = useState<string | null>(null);
 
   const generatePDF = async () => {
-      try {
-        const response = await fetch('/api/generate-pdf', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({ content }),
-        });
+    try {
+      
+      const response = await fetch('/api/generate-pdf', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ content }),
+      });
 
-        if (response.ok) {
-          const pdfBlob = await response.blob();
-          const pdfBlobUrl = URL.createObjectURL(pdfBlob);
-          setPdfUrl(pdfBlobUrl);
-        } else {
-          console.error('Failed to generate PDF:', response.statusText);
-        }
-      } catch (error) {
-        console.error('Error generating PDF:', error);
+      if (response.ok) {
+        const pdfBlob = await response.blob();
+        const pdfBlobUrl = URL.createObjectURL(pdfBlob);
+        setPdfUrl(pdfBlobUrl);
+      } else {
+        console.error('Failed to generate PDF:', response.statusText);
       }
-    };
+    } catch (error) {
+      console.error('Error generating PDF:', error);
+    }
+  };
 
 
   return (

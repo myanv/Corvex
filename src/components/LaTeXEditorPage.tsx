@@ -6,7 +6,7 @@ import { EditorComponent } from "./Editor";
 
 
 export const LaTeXEditorPage = () => {
-    const [content, setContent] = useState<string>('\\documentclass{article}\n\\begin{document}\n\\end{document}');
+    const [content, setContent] = useState<string>('\\documentclass{article}\n\\begin{document}\nOne of the most important equations in mathematics:\n$\\int_{a}^{b} f(x)dx$\n\\end{document}');
 
     return (
         <div className="h-full flex">
