@@ -1,11 +1,12 @@
+'use client';
 
 import { useState } from "react";
 import { LaTeXRenderer } from "./LaTeXRenderer";
-import { EditorComponent } from "./editor";
+import { EditorComponent } from "./Editor";
 
 
 export const LaTeXEditorPage = () => {
-    const [content, setContent] = useState<string>('');
+    const [content, setContent] = useState<string>('\\documentclass{article}\n\\begin{document}\n\\end{document}');
 
     return (
         <div className="h-full flex">

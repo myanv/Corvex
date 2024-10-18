@@ -1,5 +1,5 @@
 import latex from "node-latex";
-import fs from "fs";
+import * as fs from 'fs';
 import { openDB } from "idb";
 import { Readable } from "stream";
 
@@ -35,43 +35,35 @@ export const generateLatex = async (content: string) => {
   console.log(`Stored .tex file in IndexedDB as ${texFileName}`);
 };
 
-export const generatePDFfromLatex = async (content: string) => {
-  // content string to .pdf file
-  // should point to .tex file
-  // store in indexedDB
-  const texFileName = 'main.tex'
-  const pdfFileName = 'main.pdf'
+export const generatePDFfromLatex = async (content: string): Promise<Blob> => {
+    const texFileName = 'generated-latex.tex';
+    const pdfFileName = 'generated-latex.pdf';
+  
+    await generateLatex(content);
+  
 
-  await generateLatex(content);
+    const db = await openLatexDB();
+    const texBlob = await db.get('latexFiles', texFileName);
+    const texBuffer = await texBlob?.arrayBuffer();
+  
+    if (texBuffer) {
 
-  const db = await openLatexDB();
-  const texBlob = await db.get('latexFiles', texFileName);
-  const texBuffer = await texBlob?.arrayBuffer();
-
-  if (texBuffer) {
-    const latexStream = arrayBufferToReadable(texBuffer)
-
-    const pdfStream = fs.createWriteStream(pdfFileName);
-    const pdf = latex(latexStream);
-
-    pdf.pipe(pdfStream);
-
-    pdf.on('error', (err:any) => {
-        console.error('Error during LaTeX to PDF compilation:', err);
-    })
-
-    pdf.on('finish', async () => {
-        console.log(`Generated PDF file ${pdfFileName}`);
-
-        const pdfBuffer = fs.readFileSync(pdfFileName);
-        const pdfBlob = new Blob([pdfBuffer], { type: 'application/pdf' });
-        const pdfUrl = URL.createObjectURL(pdfBlob);
-        await db.put('pdfFiles', pdfUrl, pdfFileName);
-    
-        console.log(`Stored .pdf file in IndexedDB as ${pdfFileName}`);
-    })
-  } else {
-    console.error('No .tex file found in IndexedDB');
-  }
-};
-
+      const latexStream = arrayBufferToReadable(texBuffer);
+  
+      const pdfStream = fs.createWriteStream(pdfFileName);
+      const pdf = latex(latexStream);
+  
+      return new Promise((resolve, reject) => {
+        const chunks: Uint8Array[] = [];
+        pdf.on('data', chunk => chunks.push(chunk));
+        pdf.on('end', () => {
+          const pdfBuffer = Buffer.concat(chunks);
+          const pdfBlob = new Blob([pdfBuffer], { type: 'application/pdf' });
+          resolve(pdfBlob);
+        });
+        pdf.on('error', (err: any) => reject(err));
+      });
+    } else {
+      throw new Error("Failed to retrieve the LaTeX file from IndexedDB.");
+    }
+  };
