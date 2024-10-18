@@ -77,7 +77,7 @@ export const EditorComponent: React.FC<EditorComponentProps> = ({ content, setCo
     };
 
     const handleEditorChange: OnChange = (value: string | undefined, event: monaco.editor.IModelContentChangedEvent) => {
-        console.log('current model value:', value);
+        setContent(value || '');
     }
     return (
         <Editor
@@ -94,7 +94,8 @@ export const EditorComponent: React.FC<EditorComponentProps> = ({ content, setCo
                 fontSize: 16,
                 formatOnType: true,
                 snippetSuggestions: 'top',
-                automaticLayout: true
+                automaticLayout: true,
+                wordWrap: 'on',
             }}
         />
     )
